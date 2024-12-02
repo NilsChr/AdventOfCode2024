@@ -48,22 +48,17 @@ pub fn start() {
 }
 
 fn process_row(parts: &[i32]) -> i32 {
-    let mut iter = parts.windows(2);
-
-    let mut increase: bool = true;
-    if let Some(window) = iter.next() {
-        if window[1] < window[0] {
-            increase = false;
-        }
-    }
+    let increase = parts[1] >= parts[0];
 
     for window in parts.windows(2) {
-        let dist = (window[0] - window[1]).abs();
-        let out_of_bounds: bool = dist < 1 || dist > 3 || window[0] == window[1];
-        let wrong_order: bool =
-            increase && window[0] > window[1] || !increase && window[1] > window[0];
-        let same: bool = window[0] == window[1];
-        if out_of_bounds || wrong_order || same {
+        let a = window[0];
+        let b = window[1];
+        let dist = (a - b).abs();
+
+        let out_of_bounds = dist < 1 || dist > 3;
+        let wrong_order = (increase && a > b) || (!increase && b > a);
+
+        if out_of_bounds || wrong_order || a == b {
             return 0;
         }
     }
@@ -97,7 +92,11 @@ pub fn start_gpt() {
 
         if score == 0 {
             for index in 0..parts.len() {
-                let filtered = &parts[0..index].iter().chain(&parts[index + 1..]).copied().collect::<Vec<_>>();
+                let filtered = &parts[0..index]
+                    .iter()
+                    .chain(&parts[index + 1..])
+                    .copied()
+                    .collect::<Vec<_>>();
                 if process_row_gpt(filtered) == 1 {
                     score2 += 1;
                     break;

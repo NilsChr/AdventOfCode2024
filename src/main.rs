@@ -4,7 +4,7 @@
 mod day1;
 mod day2;
 mod util {
-    pub mod file_reader; 
+    pub mod file_reader;
 }
 
 use std::time::Instant;
