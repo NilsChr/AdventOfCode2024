@@ -1,5 +1,10 @@
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::{self, BufRead};
+
+pub fn parse_file_to_string(file_path: &str) -> io::Result<String> {
+    // Read the entire file content into a single String
+    return fs::read_to_string(file_path)
+}
 
 pub fn parse_file_to_rows(file_path: &str) -> io::Result<Vec<String>> {
     let mut rows = Vec::new();
