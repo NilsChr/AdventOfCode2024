@@ -4,6 +4,7 @@ use crate::util::file_reader;
 use crate::util::regex_helpers;
 use std::fs::read_to_string;
 
+
 pub fn start() {
     println!("Running day 4");
     let file_path: &str = "./input/day4/input.txt";
@@ -25,6 +26,7 @@ pub fn start() {
 
 fn task1(grid: &Vec<Vec<char>>) -> i32 {
     let mut count = 0;
+
     for (y, row) in grid.iter().enumerate() {
         for (x, &value) in row.iter().enumerate() {
             if value == 'X' {
@@ -51,13 +53,14 @@ fn task2(grid: &Vec<Vec<char>>) -> i32 {
                 continue;
             }
             if value == 'A' {
+                let from_x = x - 1;
                 let mut score_a = 0;
-                score_a += search_word(grid, "MAS", x - 1, y - 1, 1, 1);
-                score_a += search_word(grid, "SAM", x - 1, y - 1, 1, 1);
+                score_a += search_word(grid, "MAS", from_x, y - 1, 1, 1);
+                score_a += search_word(grid, "SAM", from_x, y - 1, 1, 1);
 
                 let mut score_b = 0;
-                score_b += search_word(grid, "MAS", x - 1, y + 1, 1, -1);
-                score_b += search_word(grid, "SAM", x - 1, y + 1, 1, -1);
+                score_b += search_word(grid, "MAS", from_x, y + 1, 1, -1);
+                score_b += search_word(grid, "SAM", from_x, y + 1, 1, -1);
 
                 if score_a > 0 && score_b > 0 {
                     count += 1;
@@ -77,7 +80,35 @@ fn search_word(
     dir_x: isize,
     dir_y: isize,
 ) -> i32 {
+    let word_chars = word.as_bytes();
+    let mut x = from_x as isize;
+    let mut y = from_y as isize;
+
+    for &letter in word_chars {
+        if x < 0 || y < 0 || y as usize >= grid.len() || x as usize >= grid[y as usize].len() {
+            return 0;
+        }
+
+        if grid[y as usize][x as usize] as u8 != letter {
+            return 0;
+        }
+
+        x += dir_x;
+        y += dir_y;
+    }
+    1
+}
+
+fn search_word_(
+    grid: &[Vec<char>],
+    word: &str,
+    from_x: usize,
+    from_y: usize,
+    dir_x: isize,
+    dir_y: isize,
+) -> i32 {
     let word_chars: Vec<char> = word.chars().collect();
+
     for (i, &letter) in word_chars.iter().enumerate() {
         let x = from_x as isize + i as isize * dir_x;
         let y = from_y as isize + i as isize * dir_y;
@@ -91,8 +122,4 @@ fn search_word(
         }
     }
     1
-}
-
-fn get_char_at(grid: &[Vec<char>], x: usize, y: usize) -> Option<char> {
-    grid.get(y)?.get(x).cloned()
 }
