@@ -45,7 +45,7 @@ pub fn start() {
 }
 
 
-pub fn start_GPT() {
+pub fn start_gpt() {
     println!("Running day 3");
     let file_path = "./input/day3/input.txt";
 

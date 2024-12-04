@@ -16,31 +16,81 @@ pub fn start() {
         }
     };
 
-    let mut task1_score = tast1(&grid);
-    let mut task2 = 0;
+    let task1_score = task1(&grid);
+    let task2_score = task2(&grid);
 
     println!("Task1: {}", task1_score);
-    println!("Task2: {}", task2);
+    println!("Task2: {}", task2_score);
 }
 
-fn tast1(grid: &Vec<Vec<char>>) -> i32 {
-
-    println!("Checking coords 2,2");
-    match get_char_at(grid, 2, 2) {
-        Some(c) => println!("Char is {}", c),
-        None => println!("Char not found at coords 2,2"),
-    }
-
+fn task1(grid: &Vec<Vec<char>>) -> i32 {
+    let mut count = 0;
     for (y, row) in grid.iter().enumerate() {
         for (x, &value) in row.iter().enumerate() {
             if value == 'X' {
-                println!("FOUND X");
+                count += search_word(grid, "XMAS", x, y, -1, -1);
+                count += search_word(grid, "XMAS", x, y, 0, -1);
+                count += search_word(grid, "XMAS", x, y, 1, -1);
+                count += search_word(grid, "XMAS", x, y, -1, 0);
+                count += search_word(grid, "XMAS", x, y, 1, 0);
+                count += search_word(grid, "XMAS", x, y, -1, 1);
+                count += search_word(grid, "XMAS", x, y, 0, 1);
+                count += search_word(grid, "XMAS", x, y, 1, 1);
             }
-            //println!("Value at ({}, {}): {}", y, x, value);
         }
     }
 
-    0
+    return count;
+}
+
+fn task2(grid: &Vec<Vec<char>>) -> i32 {
+    let mut count = 0;
+    for (y, row) in grid.iter().enumerate() {
+        for (x, &value) in row.iter().enumerate() {
+            if y == 0 || y == grid.len() || x == 0 || x == row.len() {
+                continue;
+            }
+            if value == 'A' {
+                let mut score_a = 0;
+                score_a += search_word(grid, "MAS", x - 1, y - 1, 1, 1);
+                score_a += search_word(grid, "SAM", x - 1, y - 1, 1, 1);
+
+                let mut score_b = 0;
+                score_b += search_word(grid, "MAS", x - 1, y + 1, 1, -1);
+                score_b += search_word(grid, "SAM", x - 1, y + 1, 1, -1);
+
+                if score_a > 0 && score_b > 0 {
+                    count += 1;
+                }
+            }
+        }
+    }
+
+    return count;
+}
+
+fn search_word(
+    grid: &[Vec<char>],
+    word: &str,
+    from_x: usize,
+    from_y: usize,
+    dir_x: isize,
+    dir_y: isize,
+) -> i32 {
+    let word_chars: Vec<char> = word.chars().collect();
+    for (i, &letter) in word_chars.iter().enumerate() {
+        let x = from_x as isize + i as isize * dir_x;
+        let y = from_y as isize + i as isize * dir_y;
+
+        if x < 0 || y < 0 || y >= grid.len() as isize || x >= grid[y as usize].len() as isize {
+            return 0;
+        }
+
+        if grid[y as usize][x as usize] != letter {
+            return 0;
+        }
+    }
+    1
 }
 
 fn get_char_at(grid: &[Vec<char>], x: usize, y: usize) -> Option<char> {
