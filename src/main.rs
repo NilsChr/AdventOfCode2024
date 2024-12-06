@@ -5,13 +5,14 @@ mod day1;
 mod day2;
 mod day3;
 mod day4;
+mod day5;
 pub mod util;
 
 use std::time::Instant;
 
 fn main() {
     let start_time = Instant::now();
-    day4::start();
+    day5::start();
     let elapsed_time = start_time.elapsed();
     println!("Execution time: {:.2?}", elapsed_time);
 }

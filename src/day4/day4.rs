@@ -43,7 +43,7 @@ fn task1(grid: &Vec<Vec<char>>) -> i32 {
     return count;
 }
 
-fn task2(grid: &Vec<Vec<char>>) -> i32 {
+fn task2_(grid: &Vec<Vec<char>>) -> i32 {
     let mut count = 0;
     for (y, row) in grid.iter().enumerate() {
         for (x, &value) in row.iter().enumerate() {
@@ -68,6 +68,59 @@ fn task2(grid: &Vec<Vec<char>>) -> i32 {
 
     return count;
 }
+
+fn task2(grid: &Vec<Vec<char>>) -> i32 {
+    let mut count = 0;
+    let rows = grid.len();
+    if rows == 0 {
+        return 0;
+    }
+    let cols = grid[0].len();
+
+    // Function to search for a pattern in a specific direction
+    
+    fn search_word(grid: &Vec<Vec<char>>, pattern: &[char], start_x: usize, start_y: usize, dx: isize, dy: isize) -> bool {
+        let mut x = start_x as isize;
+        let mut y = start_y as isize;
+
+        for &ch in pattern {
+            if x < 0 || x >= grid[0].len() as isize || y < 0 || y >= grid.len() as isize {
+                return false; // Out of bounds
+            }
+            if grid[y as usize][x as usize] != ch {
+                return false; // Mismatch
+            }
+            x += dx;
+            y += dy;
+        }
+
+        true // Match found
+    }
+
+    let mas: Vec<char> = "MAS".chars().collect();
+    let sam: Vec<char> = "SAM".chars().collect();
+
+    for y in 1..rows - 1 {
+        for x in 1..cols - 1 {
+            if grid[y][x] == 'A' {
+                let mut score_a = 0;
+                score_a += search_word(grid, &mas, x - 1, y - 1, 1, 1) as i32;
+                score_a += search_word(grid, &sam, x - 1, y - 1, 1, 1) as i32;
+
+                let mut score_b = 0;
+                score_b += search_word(grid, &mas, x - 1, y + 1, 1, -1) as i32;
+                score_b += search_word(grid, &sam, x - 1, y + 1, 1, -1) as i32;
+
+                if score_a > 0 && score_b > 0 {
+                    count += 1;
+                }
+            }
+        }
+    }
+
+    count
+}
+
 
 fn search_word(
     grid: &[Vec<char>],
